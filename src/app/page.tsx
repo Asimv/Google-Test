@@ -9,6 +9,15 @@ import { Compass, Sparkles } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 export default function Home() {
   const [isHostView, setIsHostView] = React.useState(false);
@@ -90,8 +99,12 @@ export default function Home() {
   });
   const [onboardingComplete, setOnboardingComplete] = React.useState(false);
 
-  const handleHostInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleHostInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
+    setNewSessionDetails((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSelectChange = (name: string) => (value: string) => {
     setNewSessionDetails((prev) => ({ ...prev, [name]: value }));
   };
 
@@ -119,69 +132,71 @@ export default function Home() {
       {isHostView ? (
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 mt-8">
           {hostScreen === 1 && (
-            <div className="max-w-2xl mx-auto">
+            <div className="max-w-md mx-auto">
               <h2 className="text-3xl font-headline font-bold mb-6">Onboard New Webinar Session</h2>
               <form onSubmit={handleOnboardingSubmit} className="space-y-6">
                 <div>
-                  <label htmlFor="industry" className="block text-sm font-medium text-gray-700">Session Industry</label>
-                  <select
-                    id="industry"
+                  <Label htmlFor="industry">Session Industry</Label>
+                  <Select
                     name="industry"
                     value={newSessionDetails.industry}
-                    onChange={handleHostInputChange}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                    required
+                    onValueChange={handleSelectChange('industry')}
                   >
-                    <option value="">Select an industry</option>
-                    {AVAILABLE_FILTERS.industries.map(industry => (
-                      <option key={industry} value={industry}>{industry}</option>
-                    ))}
-                  </select>
+                    <SelectTrigger id="industry" className="mt-1">
+                      <SelectValue placeholder="Select an industry" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {AVAILABLE_FILTERS.industries.map(industry => (
+                        <SelectItem key={industry} value={industry}>{industry}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 <div>
-                  <label htmlFor="skillLevel" className="block text-sm font-medium text-gray-700">Skill Level</label>
-                  <select
-                    id="skillLevel"
+                  <Label htmlFor="skillLevel">Skill Level</Label>
+                  <Select
                     name="skillLevel"
                     value={newSessionDetails.skillLevel}
-                    onChange={handleHostInputChange}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                    required
+                    onValueChange={handleSelectChange('skillLevel')}
                   >
-                    <option value="">Select skill level</option>
-                    {AVAILABLE_FILTERS.skillLevels.map(level => (
-                      <option key={level} value={level}>{level}</option>
-                    ))}
-                  </select>
+                    <SelectTrigger id="skillLevel" className="mt-1">
+                      <SelectValue placeholder="Select skill level" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {AVAILABLE_FILTERS.skillLevels.map(level => (
+                        <SelectItem key={level} value={level}>{level}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 <div>
-                  <label htmlFor="price" className="block text-sm font-medium text-gray-700">Free/Paid</label>
-                  <select
-                    id="price"
+                  <Label htmlFor="price">Free/Paid</Label>
+                  <Select
                     name="price"
                     value={newSessionDetails.price}
-                    onChange={handleHostInputChange}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                    required
+                    onValueChange={handleSelectChange('price')}
                   >
-                    <option value="">Select price type</option>
-                    <option value="free">Free</option>
-                    <option value="paid">Paid</option>
-                  </select>
+                    <SelectTrigger id="price" className="mt-1">
+                      <SelectValue placeholder="Select price type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="free">Free</SelectItem>
+                      <SelectItem value="paid">Paid</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 <div>
-                  <label htmlFor="targetAttendees" className="block text-sm font-medium text-gray-700">Target Number of Attendees</label>
-                  <input
+                  <Label htmlFor="targetAttendees">Target Number of Attendees</Label>
+                  <Input
                     type="number"
                     id="targetAttendees"
                     name="targetAttendees"
                     value={newSessionDetails.targetAttendees}
                     onChange={handleHostInputChange}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                    required
+                    className="mt-1"
                     min="0"
                   />
                 </div>
