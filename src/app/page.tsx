@@ -104,12 +104,13 @@ export default function Home() {
                       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                       {recommendedWebinarObjects.map((webinar) => (
                           <Tooltip key={webinar.webinarId}>
-                              <TooltipTrigger className="text-left h-full">
+                              <TooltipTrigger asChild>
                                   <WebinarCard
-                                  webinar={webinar}
-                                  isRegistered={registeredWebinars.has(webinar.webinarId)}
-                                  onRegister={handleRegister}
-                                  isRecommended
+                                    className="text-left h-full"
+                                    webinar={webinar}
+                                    isRegistered={registeredWebinars.has(webinar.webinarId)}
+                                    onRegister={handleRegister}
+                                    isRecommended
                                   />
                               </TooltipTrigger>
                               <TooltipContent>
