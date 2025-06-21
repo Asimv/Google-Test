@@ -78,7 +78,7 @@ export const WebinarCard = React.forwardRef<HTMLDivElement, WebinarCardProps>(
         </CardContent>
         <CardFooter>
           <Button
-            className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"
+            className="w-full text-accent-foreground bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 transition-all"
             onClick={() => onRegister(webinar.webinarId)}
             disabled={isRegistered}
           >
