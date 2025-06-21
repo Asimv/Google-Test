@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import { TopicIcon, LevelIcon, IndustryIcon, PriceIcon } from '@/components/icons';
-import { Check, Sparkles } from 'lucide-react';
+import { Check, Sparkles, Users } from 'lucide-react';
 
 interface WebinarCardProps {
   webinar: Webinar;
@@ -40,6 +40,10 @@ export function WebinarCard({ webinar, isRegistered, onRegister, isRecommended =
       </CardHeader>
       <CardContent className="flex-grow">
         <div className="space-y-3 text-sm">
+           <div className="flex items-center gap-2 font-semibold text-primary">
+              <Users className="w-4 h-4" />
+              <span>{String(webinar.registrants).padStart(2, '0')} learners going</span>
+           </div>
            <div className="flex items-center gap-2 text-muted-foreground">
               <PriceIcon className="w-4 h-4 text-primary" />
               <Badge variant={webinar.isFree ? "secondary" : "outline"} className="capitalize">{webinar.isFree ? 'Free' : 'Paid'}</Badge>

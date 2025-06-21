@@ -19,20 +19,24 @@ export default function Home() {
   const [registeredWebinars, setRegisteredWebinars] = React.useState<Set<string>>(new Set());
   const [recommendations, setRecommendations] = React.useState<RecommendWebinarsOutput | null>(null);
 
+  const sortedWebinars = React.useMemo(() => {
+    return [...ALL_WEBINARS].sort((a, b) => b.registrants - a.registrants);
+  }, []);
+
   React.useEffect(() => {
     async function getRecommendations() {
-      const recs = await recommendWebinars({ userProfile: USER_PROFILE, availableWebinars: ALL_WEBINARS });
+      const recs = await recommendWebinars({ userProfile: USER_PROFILE, availableWebinars: sortedWebinars });
       setRecommendations(recs);
     }
     getRecommendations();
-  }, []);
+  }, [sortedWebinars]);
 
   const handleRegister = (webinarId: string) => {
     setRegisteredWebinars((prev) => new Set(prev).add(webinarId));
   };
 
   const filteredWebinars = React.useMemo(() => {
-    return ALL_WEBINARS.filter((webinar) => {
+    return sortedWebinars.filter((webinar) => {
       if (filters.topics.size > 0 && ![...filters.topics].some((topic) => webinar.topics.includes(topic))) {
         return false;
       }
@@ -50,18 +54,26 @@ export default function Home() {
       }
       return true;
     });
-  }, [filters]);
+  }, [filters, sortedWebinars]);
 
-  const recommendedWebinarObjects = React.useMemo(() => {
-    if (!recommendations) return [];
-    const recommendedWebinarMap = new Map(recommendations.map(r => [r.webinarId, r.reason]));
-    return ALL_WEBINARS.filter(w => recommendedWebinarMap.has(w.webinarId)).map(w => ({...w, reason: recommendedWebinarMap.get(w.webinarId)}));
-  }, [recommendations]);
-
-  const nonRecommendedWebinars = React.useMemo(() => {
-    if (!recommendations) return filteredWebinars;
+  const [recommendedWebinarObjects, nonRecommendedWebinars] = React.useMemo(() => {
+    if (!recommendations) {
+        return [[], filteredWebinars];
+    }
     const recommendedIds = new Set(recommendations.map(r => r.webinarId));
-    return filteredWebinars.filter(w => !recommendedIds.has(w.webinarId));
+    const recommendedMap = new Map(recommendations.map(r => [r.webinarId, r.reason]));
+
+    const recommended: (Webinar & { reason?: string | undefined; })[] = [];
+    const nonRecommended: Webinar[] = [];
+
+    for (const webinar of filteredWebinars) {
+      if (recommendedIds.has(webinar.webinarId)) {
+        recommended.push({ ...webinar, reason: recommendedMap.get(webinar.webinarId) });
+      } else {
+        nonRecommended.push(webinar);
+      }
+    }
+    return [recommended, nonRecommended];
   }, [filteredWebinars, recommendations]);
 
 
@@ -83,42 +95,49 @@ export default function Home() {
 
           <main className="lg:col-span-3">
             <TooltipProvider>
-                <section id="recommendations">
+                {recommendations && recommendedWebinarObjects.length > 0 && (
+                  <section id="recommendations">
+                      <h2 className="text-2xl font-headline font-semibold mb-4 flex items-center gap-2">
+                          <Sparkles className="text-accent" />
+                          Recommended For You
+                      </h2>
+                      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                      {recommendedWebinarObjects.map((webinar) => (
+                          <Tooltip key={webinar.webinarId}>
+                              <TooltipTrigger className="text-left h-full">
+                                  <WebinarCard
+                                  webinar={webinar}
+                                  isRegistered={registeredWebinars.has(webinar.webinarId)}
+                                  onRegister={handleRegister}
+                                  isRecommended
+                                  />
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                  <p className="max-w-xs">{webinar.reason}</p>
+                              </TooltipContent>
+                          </Tooltip>
+                      ))}
+                      </div>
+                  </section>
+                )}
+
+                {recommendations === null && (
+                  <section id="recommendations-loading">
                     <h2 className="text-2xl font-headline font-semibold mb-4 flex items-center gap-2">
                         <Sparkles className="text-accent" />
                         Recommended For You
                     </h2>
-                    {recommendations === null ? (
-                        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                            {[...Array(3)].map((_, i) => <Skeleton key={i} className="h-80 w-full" />)}
-                        </div>
-                    ) : recommendedWebinarObjects.length > 0 ? (
-                        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                        {recommendedWebinarObjects.map((webinar) => (
-                            <Tooltip key={webinar.webinarId}>
-                                <TooltipTrigger className="text-left">
-                                    <WebinarCard
-                                    webinar={webinar}
-                                    isRegistered={registeredWebinars.has(webinar.webinarId)}
-                                    onRegister={handleRegister}
-                                    isRecommended
-                                    />
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                    <p className="max-w-xs">{webinar.reason}</p>
-                                </TooltipContent>
-                            </Tooltip>
-                        ))}
-                        </div>
-                    ) : (
-                        <p className="text-muted-foreground">No specific recommendations for you at the moment. Explore all webinars below!</p>
-                    )}
-                </section>
+                     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                        {[...Array(3)].map((_, i) => <Skeleton key={i} className="h-96 w-full" />)}
+                    </div>
+                  </section>
+                )}
+
 
                 <section id="all-webinars" className="mt-12">
                     <h2 className="text-2xl font-headline font-semibold mb-4 flex items-center gap-2">
                         <Compass className="text-primary" />
-                        Explore All Webinars
+                        {recommendations && recommendedWebinarObjects.length > 0 ? 'Trending This Week' : 'Explore All Webinars'}
                     </h2>
                     {nonRecommendedWebinars.length > 0 ? (
                         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">

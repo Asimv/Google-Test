@@ -17,6 +17,7 @@ export const ALL_WEBINARS: Webinar[] = [
     industry: 'Tech',
     isFree: true,
     skillLevel: 'beginner',
+    registrants: 125,
   },
   {
     webinarId: 'web-002',
@@ -26,6 +27,7 @@ export const ALL_WEBINARS: Webinar[] = [
     industry: 'Marketing',
     isFree: false,
     skillLevel: 'advanced',
+    registrants: 88,
   },
   {
     webinarId: 'web-003',
@@ -35,6 +37,7 @@ export const ALL_WEBINARS: Webinar[] = [
     industry: 'Finance',
     isFree: true,
     skillLevel: 'intermediate',
+    registrants: 210,
   },
   {
     webinarId: 'web-004',
@@ -44,6 +47,7 @@ export const ALL_WEBINARS: Webinar[] = [
     industry: 'Healthcare',
     isFree: false,
     skillLevel: 'intermediate',
+    registrants: 75,
   },
   {
     webinarId: 'web-005',
@@ -53,6 +57,7 @@ export const ALL_WEBINARS: Webinar[] = [
     industry: 'Marketing',
     isFree: true,
     skillLevel: 'intermediate',
+    registrants: 305,
   },
   {
     webinarId: 'web-006',
@@ -62,6 +67,7 @@ export const ALL_WEBINARS: Webinar[] = [
     industry: 'General',
     isFree: true,
     skillLevel: 'beginner',
+    registrants: 45,
   },
   {
     webinarId: 'web-007',
@@ -71,6 +77,7 @@ export const ALL_WEBINARS: Webinar[] = [
     industry: 'Tech',
     isFree: false,
     skillLevel: 'advanced',
+    registrants: 150,
   },
   {
     webinarId: 'web-008',
@@ -80,6 +87,7 @@ export const ALL_WEBINARS: Webinar[] = [
     industry: 'Finance',
     isFree: false,
     skillLevel: 'advanced',
+    registrants: 92,
   },
 ];
 

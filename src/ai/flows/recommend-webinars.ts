@@ -1,5 +1,3 @@
-// Recommend webinars based on user profiles and interests.
-
 'use server';
 
 import {ai} from '@/ai/genkit';
@@ -32,6 +30,7 @@ const WebinarSchema = z.object({
   industry: z.string().describe('The industry the webinar is relevant to.'),
   isFree: z.boolean().describe('Indicates if the webinar is free or paid.'),
   skillLevel: z.enum(['beginner', 'intermediate', 'advanced']).describe('The skill level targeted by the webinar.'),
+  registrants: z.number().describe('The number of people registered for the webinar.'),
 });
 
 export type Webinar = z.infer<typeof WebinarSchema>;
@@ -94,14 +93,15 @@ async (input) => {
     }
   }
 
-  return recommendations;
+  // Return a maximum of 3 recommendations to keep the UI clean
+  return recommendations.slice(0, 3);
 });
 
 
 const recommendWebinarsPrompt = ai.definePrompt({
   name: 'recommendWebinarsPrompt',
   tools: [recommendWebinarsTool],
-  prompt: `Based on the user profile and available webinars, recommend the most relevant webinars to the user. Use the getRelevantWebinars tool to determine the recommendations.
+  prompt: `Based on the user profile and available webinars, recommend up to 3 most relevant webinars to the user. Use the getRelevantWebinars tool to determine the recommendations.
 
   User Profile:
   {{json userProfile}}
